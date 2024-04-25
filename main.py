@@ -17,7 +17,7 @@ file_path = ""
 # ALLOWS USERS TO EDIT AN IMAGE OF THEIR CHOICE
 def add_image():
     global file_path
-    file_path = filedialog.askopenfilename(initialdir="/", title = "Select Image")  # file directory for pics 
+    file_path = filedialog.askopenfilename(initialdir="/", title="Select Image")  # file directory for pics 
     if file_path:
         image = Image.open(file_path) # open image from file path
         # resize image
@@ -30,6 +30,8 @@ def add_image():
         canvas.create_image(0, 0, image=image, anchor="nw")
         # enable filter combobox
         toggle_filter_combobox("normal")
+        # enable save button
+        save_button.config(state="normal")
 
 def change_color():
     global pen_color
@@ -50,6 +52,8 @@ def clear_canvas():
     canvas.delete("all")
     # disable filter combobox initially 
     toggle_filter_combobox("disabled")
+    # disable save button
+    save_button.config(state="disabled")
 
 # FILTER PRESETS
 def apply_filter(filter):
@@ -138,6 +142,10 @@ filter_combobox.pack()
 
 filter_combobox.bind("<<ComboboxSelected>>",
                      lambda event: apply_filter(filter_combobox.get()))
+
+# Save Button
+save_button = tk.Button(left_frame, text="Save As", command=save_image, bg="white", state="disabled")
+save_button.pack(pady=10)
 
 # Draw motion
 canvas.bind("<B1-Motion>", draw)
