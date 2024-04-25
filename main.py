@@ -4,7 +4,7 @@ from tkinter import colorchooser
 from PIL import Image, ImageOps, ImageTk, ImageFilter
 from tkinter import ttk
 
-
+# UI
 root = tk.Tk()
 root.geometry("1000x600")
 root.title("Photo Editor")
@@ -17,13 +17,13 @@ file_path = ""
 def add_image():
     global file_path
     file_path = filedialog.askopenfilename(
-        initialdir= "D:/code/Tinker/images") #FILE NAME FOR PICS
-    image = Image.open(file_path) #open image from file path
+        initialdir= "C:\\Users\\toby\\SCHOOL\\rando") # file directory for specifying the pic (CHANGE)
+    image = Image.open(file_path) # open image from file path
     # resize image
     width, height = int(image.width / 2), int(image.height / 2)
-    image = image.resize((width, height), Image.ANTIALIAS) # <- ANTIALIAS is in pillow
+    image = image.resize((width, height), Image.BILINEAR) # <- BILINEAR is in pillow
     canvas.config(width = image.width, height = image.height)
-    image = ImageTK.PhotoImage(image) # in pillow as well
+    image = ImageTk.PhotoImage(image) # in pillow as well
     # set image to canvas
     canvas.image = image
     canvas.create_image(0, 0, image = image, anchor = "nw")
@@ -53,7 +53,7 @@ def clear_canvas():
 def apply_filter(filter):
     image = Image.open(file_path)
     width, height = int(image.width / 2), int(image.height / 2)
-    image = image.resize((width, height), Image.ANTIALIAS) # <- In pillow imports
+    image = image.resize((width, height), Image.BILINEAR) # <- In pillow imports
     if filter == "Black and White":
         image = ImageOps.grayscale(image)
     elif filter == "Blur":
@@ -78,7 +78,7 @@ canvas = tk.Canvas(root, width = 750, height = 600)
 canvas.pack()
 
 # Image Button
-image_button = tk.Button(left_frame, text = "Upload Image", bg = "white")
+image_button = tk.Button(left_frame, text = "Upload Image", command = add_image, bg = "white")
 image_button.pack(pady=15)
 
 # Color Button
