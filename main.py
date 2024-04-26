@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, colorchooser
-from PIL import Image, ImageOps, ImageTk, ImageFilter
+from PIL import Image, ImageOps, ImageTk, ImageFilter, ImageEnhance
 from tkinter import ttk
 
 # UI
@@ -9,10 +9,11 @@ root.geometry("1000x600")
 root.title("Photo Editor")
 root.config(bg="white")
 
-# pen settings
+# Global variables
 pen_color = "black"
 pen_size = 5
 file_path = ""
+brightness_value = 1.0
 
 # ALLOWS USERS TO EDIT AN IMAGE OF THEIR CHOICE
 def add_image():
@@ -32,6 +33,14 @@ def add_image():
         toggle_filter_combobox("normal")
         # enable save button
         save_button.config(state="normal")
+        # enable brightness slider
+        brightness_slider.config(state="normal")
+
+# Change the brightness of the image
+def change_brightness(value):
+    global brightness_value
+    brightness_value = float(value)
+    apply_filter("Brightness")
 
 def change_color():
     global pen_color
@@ -54,6 +63,8 @@ def clear_canvas():
     toggle_filter_combobox("disabled")
     # disable save button
     save_button.config(state="disabled")
+    # disable brightness slider
+    brightness_slider.config(state="disabled")
 
 # FILTER PRESETS
 def apply_filter(filter):
@@ -72,6 +83,8 @@ def apply_filter(filter):
         image = image.filter(ImageFilter.SMOOTH)
     elif filter == "Emboss":
         image = image.filter(ImageFilter.EMBOSS)
+    elif filter == "Brightness":
+        image = ImageEnhance.Brightness(image).enhance(brightness_value)
 
     image = ImageTk.PhotoImage(image)
     canvas.image = image
@@ -142,6 +155,12 @@ filter_combobox.pack()
 
 filter_combobox.bind("<<ComboboxSelected>>",
                      lambda event: apply_filter(filter_combobox.get()))
+
+# Brightness Slider
+brightness_label = tk.Label(left_frame, text="Brightness", bg="white")
+brightness_label.pack()
+brightness_slider = tk.Scale(left_frame, from_=0.1, to=2.0, resolution=0.1, orient=tk.HORIZONTAL, command=change_brightness, state="disabled")
+brightness_slider.pack()
 
 # Save Button
 save_button = tk.Button(left_frame, text="Save As", command=save_image, bg="white", state="disabled")
