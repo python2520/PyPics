@@ -161,11 +161,6 @@ pen_large = tk.Radiobutton(
     pen_size_frame, text="Large", value=7, command=lambda: change_size(7), bg="white")
 pen_large.pack(side="left")
 
-# Clear Button
-clear_button = tk.Button(left_frame, text="Clear All",
-                         command=clear_canvas, bg="#FF9797")
-clear_button.pack(pady=10)
-
 # Filter Combobox
 filter_label = tk.Label(left_frame, text="Select Filter", bg="white")
 filter_label.pack()
@@ -181,17 +176,28 @@ brightness_label.pack()
 brightness_slider = tk.Scale(left_frame, from_=0.1, to=2.0, resolution=0.1, orient=tk.HORIZONTAL, command=change_brightness, state="disabled")
 brightness_slider.pack()
 
+# Rotate and Flip Buttons
+rotate_flip_frame = tk.Frame(left_frame, bg="white")
+rotate_flip_frame.pack(pady=5)
+
 # Rotate Button
-rotate_button = tk.Button(left_frame, text="Rotate", command=rotate_image, bg="white", state="disabled")
-rotate_button.pack(pady=5)
+rotate_button = tk.Button(
+    rotate_flip_frame, text="Rotate", command=rotate_image, bg="white", state="disabled")
+rotate_button.pack(side="left", padx=5)
 
 # Flip Button
-flip_button = tk.Button(left_frame, text="Flip", command=flip_image, bg="white", state="disabled")
-flip_button.pack(pady=5)
+flip_button = tk.Button(
+    rotate_flip_frame, text="Flip", command=flip_image, bg="white", state="disabled")
+flip_button.pack(side="left", padx=5)
 
 # Save Button
 save_button = tk.Button(left_frame, text="Save As", command=save_image, bg="white", state="disabled")
 save_button.pack(pady=10)
+
+# Clear Button
+clear_button = tk.Button(left_frame, text="Clear All",
+                         command=clear_canvas, bg="#FF9797")
+clear_button.pack(pady=10)
 
 # Draw motion
 canvas.bind("<B1-Motion>", draw)
