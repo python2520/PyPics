@@ -13,13 +13,15 @@ root.config(bg="white")
 pen_color = "black"
 pen_size = 5
 file_path = ""
+untouched = ""
 brightness_value = 1.0
 rotation_angle = 0
 
 # ALLOWS USERS TO EDIT AN IMAGE OF THEIR CHOICE
 def add_image():
-    global file_path, rotation_angle
-    file_path = filedialog.askopenfilename(initialdir="/", title="Select Image")  
+    global file_path, rotation_angle, untouched
+    file_path = filedialog.askopenfilename(initialdir="/", title="Select Image") 
+    untouched = file_path
     if file_path:
         rotation_angle = 0  # Reset rotation angle
         display_image()
@@ -69,6 +71,21 @@ def clear_canvas():
     rotate_button.config(state="disabled")
     flip_button.config(state="disabled")
 
+def revert():
+    global untouched
+    rotation_angle = 0
+    image = Image.open(untouched)
+    # Rotate image based on rotation angle
+    rotated_image = image.rotate(rotation_angle, expand=True)
+    width, height = int(rotated_image.width / 2), int(rotated_image.height / 2)
+    rotated_image = rotated_image.resize((width, height), Image.BILINEAR)
+    image = ImageTk.PhotoImage(rotated_image)
+    canvas.config(width=image.width(), height=image.height())
+    canvas.image = image
+    canvas.create_image(0, 0, image=image, anchor="nw")
+    toggle_filter_combobox("normal")
+    save_button.config(state="normal")
+    brightness_slider.config(state="normal")
 # FILTER PRESETS
 def apply_filter(filter):
     if not file_path:
