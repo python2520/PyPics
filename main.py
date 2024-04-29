@@ -27,6 +27,7 @@ def add_image():
         display_image()
         rotate_button.config(state="normal")
         flip_button.config(state="normal")
+        revert_button.config(state = "normal")
 
 def display_image():
     global file_path, rotation_angle
@@ -74,9 +75,10 @@ def clear_canvas():
 # Undos changes
 def revert():
     global untouched
+    if not file_path:
+        return
     rotation_angle = 0
     image = Image.open(untouched)
-    # Rotate image based on rotation angle
     rotated_image = image.rotate(rotation_angle, expand=True)
     width, height = int(rotated_image.width / 2), int(rotated_image.height / 2)
     rotated_image = rotated_image.resize((width, height), Image.BILINEAR)
@@ -213,8 +215,8 @@ flip_button.pack(side="left", padx=5)
 save_button = tk.Button(left_frame, text="Save As", command=save_image, bg="white", state="disabled")
 save_button.pack(pady=10)
 
-# Revert Button
-revert_button = tk.Button(left_frame, text="Revert", command=revert, bg="white", state="normal")
+# Undo Button
+revert_button = tk.Button(left_frame, text="Undo", command=revert, bg="white", state="disabled")
 revert_button.pack(pady=10)
 
 # Clear Button
