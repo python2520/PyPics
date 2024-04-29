@@ -17,13 +17,13 @@ untouched = ""
 brightness_value = 1.0
 rotation_angle = 0
 
-# ALLOWS USERS TO EDIT AN IMAGE OF THEIR CHOICE
+# Allows users to edit an image of their choice
 def add_image():
     global file_path, rotation_angle, untouched
     file_path = filedialog.askopenfilename(initialdir="/", title="Select Image") 
     untouched = file_path
     if file_path:
-        rotation_angle = 0  # Reset rotation angle
+        rotation_angle = 0 
         display_image()
         rotate_button.config(state="normal")
         flip_button.config(state="normal")
@@ -31,7 +31,6 @@ def add_image():
 def display_image():
     global file_path, rotation_angle
     image = Image.open(file_path)
-    # Rotate image based on rotation angle
     rotated_image = image.rotate(rotation_angle, expand=True)
     width, height = int(rotated_image.width / 2), int(rotated_image.height / 2)
     rotated_image = rotated_image.resize((width, height), Image.BILINEAR)
@@ -57,12 +56,13 @@ def change_size(size):
     global pen_size
     pen_size = size
 
-# ENABLES PEN DRAWING
+# Enables pen drawing
 def draw(event):
     x1, y1 = (event.x - pen_size), (event.y - pen_size)
     x2, y2 = (event.x + pen_size), (event.y + pen_size)
     canvas.create_oval(x1, y1, x2, y2, fill=pen_color, outline='')
 
+# Deletes everything
 def clear_canvas():
     canvas.delete("all")
     toggle_filter_combobox("disabled")
@@ -71,6 +71,7 @@ def clear_canvas():
     rotate_button.config(state="disabled")
     flip_button.config(state="disabled")
 
+# Undos changes
 def revert():
     global untouched
     rotation_angle = 0
@@ -86,7 +87,8 @@ def revert():
     toggle_filter_combobox("normal")
     save_button.config(state="normal")
     brightness_slider.config(state="normal")
-# FILTER PRESETS
+
+# Filter presets
 def apply_filter(filter):
     if not file_path:
         return
@@ -111,11 +113,11 @@ def apply_filter(filter):
     canvas.image = image
     canvas.create_image(0, 0, image=image, anchor="nw")
 
-# allow the filter combobox to appear ONLY when an image is selected
+# Allows the filter combobox to appear ONLY when an image is selected
 def toggle_filter_combobox(state):
     filter_combobox.config(state=state)
 
-# ability to save edited image
+# Allows edited image to be saved
 def save_image():
     if not file_path:
         return
@@ -140,11 +142,11 @@ def flip_image():
         flipped_image.save(file_path)
         display_image()
 
-# creates left frame
+# Creates left frame
 left_frame = tk.Frame(root, width=200, height=600, bg="white")
 left_frame.pack(side="left", fill="y")
 
-# canvas size
+# Canvas size
 canvas = tk.Canvas(root, width=750, height=600)
 canvas.pack()
 
@@ -161,19 +163,18 @@ color_button.pack(pady=5)
 pen_size_frame = tk.Frame(left_frame, bg="white")
 pen_size_frame.pack(pady=5)
 
-# PEN SIZE RADIO BUTTONS:
-# small pen
+# Small pen
 pen_small = tk.Radiobutton(
     pen_size_frame, text="Small", value=3, command=lambda: change_size(3), bg="white")
 pen_small.pack(side="left")
 
-# medium pen
+# Medium pen
 pen_medium = tk.Radiobutton(
     pen_size_frame, text="Medium", value=5, command=lambda: change_size(5), bg="white")
 pen_medium.pack(side="left")
 pen_medium.select()
 
-# large pen
+# Large pen
 pen_large = tk.Radiobutton(
     pen_size_frame, text="Large", value=7, command=lambda: change_size(7), bg="white")
 pen_large.pack(side="left")
@@ -188,10 +189,11 @@ filter_combobox.bind("<<ComboboxSelected>>",
                      lambda event: apply_filter(filter_combobox.get()))
 
 # Brightness Slider
-brightness_label = tk.Label(left_frame, text="Brightness", bg="white")
+brightness_label = tk.Label(left_frame, text = "Brightness", bg = "white")
 brightness_label.pack()
-brightness_slider = tk.Scale(left_frame, from_=0.1, to=2.0, resolution=0.1, orient=tk.HORIZONTAL, command=change_brightness, state="disabled")
+brightness_slider = tk.Scale(left_frame, from_ = 0, to = 2, resolution = 0.1, orient = tk.HORIZONTAL, command = change_brightness, state = "disabled")
 brightness_slider.pack()
+brightness_slider.set(1)
 
 # Rotate and Flip Buttons
 rotate_flip_frame = tk.Frame(left_frame, bg="white")
@@ -210,6 +212,10 @@ flip_button.pack(side="left", padx=5)
 # Save Button
 save_button = tk.Button(left_frame, text="Save As", command=save_image, bg="white", state="disabled")
 save_button.pack(pady=10)
+
+# Revert Button
+revert_button = tk.Button(left_frame, text="Revert", command=revert, bg="white", state="normal")
+revert_button.pack(pady=10)
 
 # Clear Button
 clear_button = tk.Button(left_frame, text="Clear All",
