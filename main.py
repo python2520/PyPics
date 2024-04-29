@@ -191,11 +191,11 @@ filter_combobox.bind("<<ComboboxSelected>>",
                      lambda event: apply_filter(filter_combobox.get()))
 
 # Brightness Slider
-brightness_label = tk.Label(left_frame, text = "Brightness", bg = "white")
+brightness_label = tk.Label(left_frame, text="Brightness", bg="white")
 brightness_label.pack()
-brightness_slider = tk.Scale(left_frame, from_ = 0, to = 2, resolution = 0.1, orient = tk.HORIZONTAL, command = change_brightness, state = "disabled")
+brightness_slider = tk.Scale(left_frame, from_=0, to=2, resolution=0.1, orient=tk.HORIZONTAL, command=change_brightness)
 brightness_slider.pack()
-brightness_slider.set(1)
+brightness_slider.set(brightness_value)
 
 # Rotate and Flip Buttons
 rotate_flip_frame = tk.Frame(left_frame, bg="white")
@@ -216,7 +216,7 @@ save_button = tk.Button(left_frame, text="Save As", command=save_image, bg="whit
 save_button.pack(pady=10)
 
 # Undo Button
-revert_button = tk.Button(left_frame, text="Undo", command=revert, bg="white", state="disabled")
+revert_button = tk.Button(left_frame, text="Revert Changes", command=revert, bg="white", state="disabled")
 revert_button.pack(pady=10)
 
 # Clear Button
