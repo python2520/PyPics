@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import filedialog, colorchooser
 from PIL import Image, ImageOps, ImageTk, ImageFilter, ImageEnhance
 from tkinter import ttk
-
+import tempfile
+import math
 # UI
 root = tk.Tk()
 root.geometry("1000x600")
@@ -16,6 +17,9 @@ file_path = ""
 untouched = ""
 brightness_value = 1.0
 rotation_angle = 0
+drawing_objects = []
+
+
 
 # Allows users to edit an image of their choice
 def add_image():
@@ -42,6 +46,7 @@ def display_image():
     toggle_filter_combobox("normal")
     save_button.config(state="normal")
     brightness_slider.config(state="normal")
+    canvas.tag_raise("drawing")
 
 # Change the brightness of the image
 def change_brightness(value):
@@ -61,7 +66,31 @@ def change_size(size):
 def draw(event):
     x1, y1 = (event.x - pen_size), (event.y - pen_size)
     x2, y2 = (event.x + pen_size), (event.y + pen_size)
-    canvas.create_oval(x1, y1, x2, y2, fill=pen_color, outline='')
+    #canvas.create_oval(x1, y1, x2, y2, fill=pen_color, outline='', tags = "drawing")
+    drawing_objects.append(canvas.create_oval(x1, y1, x2, y2, fill=pen_color, outline='', tags = "drawing"))
+
+def rotate_drawing():
+    global drawing_objects
+    canvas_width = canvas.winfo_width()
+    canvas_height = canvas.winfo_height()
+    for obj in drawing_objects:
+        coords = canvas.coords(obj)
+        x1, y1, x2, y2 = coords
+        x1_rot, y1_rot = rotate_point(x1, y1, canvas_width, canvas_height)
+        x2_rot, y2_rot = rotate_point(x2, y2, canvas_width, canvas_height)
+        canvas.coords(obj, x1_rot, y1_rot, x2_rot, y2_rot)
+
+# Allows drawings to rotate too 
+def rotate_point(x, y, canvas_width, canvas_height):
+    global rotation_angle
+    radians = math.radians(rotation_angle)
+    center_x = canvas_width / 2
+    center_y = canvas_height / 2
+    x_rel = x - center_x
+    y_rel = y - center_y
+    x_rot = center_x + (x_rel * math.cos(radians) - y_rel * math.sin(radians))
+    y_rot = center_y + (x_rel * math.sin(radians) + y_rel * math.cos(radians))
+    return x_rot, y_rot
 
 # Deletes everything
 def clear_canvas():
@@ -74,6 +103,7 @@ def clear_canvas():
 
 # Undos changes
 def revert():
+    canvas.delete("all")
     global untouched
     if not file_path:
         return
@@ -114,7 +144,7 @@ def apply_filter(filter):
     image = ImageTk.PhotoImage(rotated_image)
     canvas.image = image
     canvas.create_image(0, 0, image=image, anchor="nw")
-
+    canvas.tag_raise("drawing")
 # Allows the filter combobox to appear ONLY when an image is selected
 def toggle_filter_combobox(state):
     filter_combobox.config(state=state)
@@ -134,6 +164,8 @@ def rotate_image():
     global rotation_angle
     rotation_angle = (rotation_angle - 90) % 360
     display_image()
+    rotate_drawing()
+    apply_filter("Brightness")
 
 # Flip the image horizontally (mirror the image)
 def flip_image():
@@ -141,9 +173,28 @@ def flip_image():
     if file_path:
         image = Image.open(file_path)
         flipped_image = image.transpose(Image.FLIP_LEFT_RIGHT)
-        flipped_image.save(file_path)
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+        flipped_image.save(temp_file.name)
+        file_path = temp_file.name
         display_image()
+        flip_drawing("horizontal")
+    apply_filter("Brightness")
 
+def flip_drawing(direction):
+    global drawing_objects
+    if direction == "horizontal":
+        flip_horizontal()
+
+def flip_horizontal():
+    global drawing_objects
+    canvas_width = canvas.winfo_width()
+    for obj in drawing_objects:
+        coords = canvas.coords(obj)
+        x1, y1, x2, y2 = coords
+        x1_flip = canvas_width - x1
+        x2_flip = canvas_width - x2
+        canvas.coords(obj, x1_flip, y1, x2_flip, y2)
+    
 # Creates left frame
 left_frame = tk.Frame(root, width=200, height=600, bg="white")
 left_frame.pack(side="left", fill="y")
