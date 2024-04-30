@@ -4,6 +4,7 @@ from PIL import Image, ImageOps, ImageTk, ImageFilter, ImageEnhance
 from tkinter import ttk
 import tempfile
 import math
+
 # UI
 root = tk.Tk()
 root.geometry("1000x600")
@@ -19,8 +20,6 @@ brightness_value = 1.0
 rotation_angle = 0
 drawing_objects = []
 
-
-
 # Allows users to edit an image of their choice
 def add_image():
     global file_path, rotation_angle, untouched
@@ -33,6 +32,7 @@ def add_image():
         flip_button.config(state="normal")
         revert_button.config(state = "normal")
 
+# Displays the image after the user makes edits it
 def display_image():
     global file_path, rotation_angle
     image = Image.open(file_path)
@@ -54,10 +54,12 @@ def change_brightness(value):
     brightness_value = float(value)
     apply_filter("Brightness")
 
+# Allows the user to change colors of the drawing tool
 def change_color():
     global pen_color
     pen_color = colorchooser.askcolor(title="Select Pen Color")[1]
 
+# Allows the user to change the size of the drawing tool
 def change_size(size):
     global pen_size
     pen_size = size
@@ -66,9 +68,9 @@ def change_size(size):
 def draw(event):
     x1, y1 = (event.x - pen_size), (event.y - pen_size)
     x2, y2 = (event.x + pen_size), (event.y + pen_size)
-    #canvas.create_oval(x1, y1, x2, y2, fill=pen_color, outline='', tags = "drawing")
     drawing_objects.append(canvas.create_oval(x1, y1, x2, y2, fill=pen_color, outline='', tags = "drawing"))
 
+# Rotate the image
 def rotate_drawing():
     global drawing_objects
     canvas_width = canvas.winfo_width()
@@ -145,6 +147,7 @@ def apply_filter(filter):
     canvas.image = image
     canvas.create_image(0, 0, image=image, anchor="nw")
     canvas.tag_raise("drawing")
+
 # Allows the filter combobox to appear ONLY when an image is selected
 def toggle_filter_combobox(state):
     filter_combobox.config(state=state)
