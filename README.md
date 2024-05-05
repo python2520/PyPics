@@ -1,4 +1,4 @@
-# Photo Editor
+# PyPics photo editor
 
 This is a photo editor application built using Python and Tkinter. 
 It allows users to perform image editing operations such as rotating, flipping, applying filters, adjusting brightness, drawings, and saving edited images.
