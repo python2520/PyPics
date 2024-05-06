@@ -8,7 +8,7 @@ import math
 # UI
 root = tk.Tk()
 root.geometry("1000x600")
-root.title("Photo Editor")
+root.title("PyPics")
 root.config(bg="white")
 
 # Global variables
