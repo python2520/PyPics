@@ -1,4 +1,4 @@
-# PyPics photo editor
+# PyPics Photo Editor
 
 This is a photo editor application built using Python and Tkinter. 
 It allows users to perform image editing operations such as rotating, flipping, applying filters, adjusting brightness, drawings, and saving edited images.
@@ -21,6 +21,9 @@ pip install numpy opencv-python pillow
 
 To run application:
 python3 main.py
+
+Download to save images:
+https://ghostscript.com/releases/gsdnld.html
 
 code version: Python3 v3.11.5
 

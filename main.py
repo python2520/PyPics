@@ -158,11 +158,6 @@ def save_image():
     global file_path
     if not file_path:
         return
-    # save_path = filedialog.asksaveasfilename(defaultextension=".png")
-    # if save_path:
-    #     canvas.postscript(file=save_path + '.eps')
-    #     img = Image.open(save_path + '.eps')
-    #     img.save(save_path, format="PNG")
     save_path = filedialog.asksaveasfilename(defaultextension=".png")
     if save_path:
         # Save the modified image to the specified path
