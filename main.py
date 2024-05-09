@@ -132,20 +132,26 @@ def apply_filter(filter):
     rotated_image = rotated_image.resize((width, height), Image.BILINEAR)
     if filter == "Black and White":
         rotated_image = ImageOps.grayscale(rotated_image)
+        rotated_image = ImageEnhance.Brightness(rotated_image).enhance(brightness_value)
     elif filter == "Blur":
         rotated_image = rotated_image.filter(ImageFilter.BLUR)
+        rotated_image = ImageEnhance.Brightness(rotated_image).enhance(brightness_value)
     elif filter == "Sharpen":
         rotated_image = rotated_image.filter(ImageFilter.SHARPEN)
+        rotated_image = ImageEnhance.Brightness(rotated_image).enhance(brightness_value)
     elif filter == "Smooth":
         rotated_image = rotated_image.filter(ImageFilter.SMOOTH)
+        rotated_image = ImageEnhance.Brightness(rotated_image).enhance(brightness_value)
     elif filter == "Emboss":
         rotated_image = rotated_image.filter(ImageFilter.EMBOSS)
+        rotated_image = ImageEnhance.Brightness(rotated_image).enhance(brightness_value)
     elif filter == "Brightness":
         rotated_image = ImageEnhance.Brightness(rotated_image).enhance(brightness_value)
 
     image = ImageTk.PhotoImage(rotated_image)
     canvas.image = image
     canvas.create_image(0, 0, image=image, anchor="nw")
+    #apply_filter("Brightness")
     canvas.tag_raise("drawing")
 
 # Allows the filter combobox to appear ONLY when an image is selected
