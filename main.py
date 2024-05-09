@@ -4,11 +4,11 @@ from PIL import Image, ImageOps, ImageTk, ImageFilter, ImageEnhance
 from tkinter import ttk
 import tempfile
 import math
-
+import io
 # UI
 root = tk.Tk()
 root.geometry("1000x600")
-root.title("PyPics")
+root.title("Photo Editor")
 root.config(bg="white")
 
 # Global variables
@@ -19,14 +19,16 @@ untouched = ""
 brightness_value = 1.0
 rotation_angle = 0
 drawing_objects = []
-
+original_image = None
+image = None
 # Allows users to edit an image of their choice
 def add_image():
-    global file_path, rotation_angle, untouched
+    global file_path, rotation_angle, untouched, original_image
     file_path = filedialog.askopenfilename(initialdir="/", title="Select Image") 
     untouched = file_path
     if file_path:
         rotation_angle = 0 
+        original_image = Image.open(file_path)
         display_image()
         rotate_button.config(state="normal")
         flip_button.config(state="normal")
@@ -34,9 +36,8 @@ def add_image():
 
 # Displays the image after the user makes edits it
 def display_image():
-    global file_path, rotation_angle
-    image = Image.open(file_path)
-    rotated_image = image.rotate(rotation_angle, expand=True)
+    global file_path, rotation_angle, original_image, image
+    rotated_image = original_image.rotate(rotation_angle, expand=True)
     width, height = int(rotated_image.width / 2), int(rotated_image.height / 2)
     rotated_image = rotated_image.resize((width, height), Image.BILINEAR)
     image = ImageTk.PhotoImage(rotated_image)
@@ -47,7 +48,6 @@ def display_image():
     save_button.config(state="normal")
     brightness_slider.config(state="normal")
     canvas.tag_raise("drawing")
-
 # Change the brightness of the image
 def change_brightness(value):
     global brightness_value
@@ -154,13 +154,22 @@ def toggle_filter_combobox(state):
 
 # Allows edited image to be saved
 def save_image():
+    global image
+    global file_path
     if not file_path:
         return
+    # save_path = filedialog.asksaveasfilename(defaultextension=".png")
+    # if save_path:
+    #     canvas.postscript(file=save_path + '.eps')
+    #     img = Image.open(save_path + '.eps')
+    #     img.save(save_path, format="PNG")
     save_path = filedialog.asksaveasfilename(defaultextension=".png")
     if save_path:
-        canvas.postscript(file=save_path + '.eps')
-        img = Image.open(save_path + '.eps')
-        img.save(save_path)
+        # Save the modified image to the specified path
+        image_data = canvas.postscript(colormode="color")
+        image_data = Image.open(io.BytesIO(image_data.encode("utf-8")))
+        image_data.save(save_path, format="PNG")
+
 
 # Rotate the image clockwise by 90 degrees
 def rotate_image():
@@ -210,36 +219,6 @@ canvas.pack()
 image_button = tk.Button(left_frame, text="Upload Image", command=add_image, bg="white")
 image_button.pack(pady=15)
 
-# Rotate and Flip Buttons
-rotate_flip_frame = tk.Frame(left_frame, bg="white")
-rotate_flip_frame.pack(pady=5)
-
-# Rotate Button
-rotate_button = tk.Button(
-    rotate_flip_frame, text="Rotate", command=rotate_image, bg="white", state="disabled")
-rotate_button.pack(side="left", padx=5)
-
-# Flip Button
-flip_button = tk.Button(
-    rotate_flip_frame, text="Flip", command=flip_image, bg="white", state="disabled")
-flip_button.pack(side="left", padx=5)
-
-# Brightness Slider
-brightness_label = tk.Label(left_frame, text="Brightness", bg="white")
-brightness_label.pack()
-brightness_slider = tk.Scale(left_frame, from_=0, to=2, resolution=0.1, orient=tk.HORIZONTAL, command=change_brightness)
-brightness_slider.pack()
-brightness_slider.set(brightness_value)
-
-# Filter Combobox
-filter_label = tk.Label(left_frame, text="Select Filter", bg="white")
-filter_label.pack()
-filter_combobox = ttk.Combobox(left_frame, values=["Black and White", "Blur", "Emboss", "Sharpen", "Smooth"], state="disabled")
-filter_combobox.pack()
-
-filter_combobox.bind("<<ComboboxSelected>>",
-                     lambda event: apply_filter(filter_combobox.get()))
-
 # Color Button
 color_button = tk.Button(
     left_frame, text="Change Pen Color", command=change_color, bg="white")
@@ -265,11 +244,41 @@ pen_large = tk.Radiobutton(
     pen_size_frame, text="Large", value=7, command=lambda: change_size(7), bg="white")
 pen_large.pack(side="left")
 
+# Filter Combobox
+filter_label = tk.Label(left_frame, text="Select Filter", bg="white")
+filter_label.pack()
+filter_combobox = ttk.Combobox(left_frame, values=["Black and White", "Blur", "Emboss", "Sharpen", "Smooth"], state="disabled")
+filter_combobox.pack()
+
+filter_combobox.bind("<<ComboboxSelected>>",
+                     lambda event: apply_filter(filter_combobox.get()))
+
+# Brightness Slider
+brightness_label = tk.Label(left_frame, text="Brightness", bg="white")
+brightness_label.pack()
+brightness_slider = tk.Scale(left_frame, from_=0, to=2, resolution=0.1, orient=tk.HORIZONTAL, command=change_brightness)
+brightness_slider.pack()
+brightness_slider.set(brightness_value)
+
+# Rotate and Flip Buttons
+rotate_flip_frame = tk.Frame(left_frame, bg="white")
+rotate_flip_frame.pack(pady=5)
+
+# Rotate Button
+rotate_button = tk.Button(
+    rotate_flip_frame, text="Rotate", command=rotate_image, bg="white", state="disabled")
+rotate_button.pack(side="left", padx=5)
+
+# Flip Button
+flip_button = tk.Button(
+    rotate_flip_frame, text="Flip", command=flip_image, bg="white", state="disabled")
+flip_button.pack(side="left", padx=5)
+
 # Save Button
 save_button = tk.Button(left_frame, text="Save As", command=save_image, bg="white", state="disabled")
 save_button.pack(pady=10)
 
-# revert Button
+# Undo Button
 revert_button = tk.Button(left_frame, text="Revert Changes", command=revert, bg="white", state="disabled")
 revert_button.pack(pady=10)
 
