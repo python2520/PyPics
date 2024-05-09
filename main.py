@@ -220,6 +220,36 @@ canvas.pack()
 image_button = tk.Button(left_frame, text="Upload Image", command=add_image, bg="white")
 image_button.pack(pady=15)
 
+# Rotate and Flip Buttons
+rotate_flip_frame = tk.Frame(left_frame, bg="white")
+rotate_flip_frame.pack(pady=5)
+
+# Rotate Button
+rotate_button = tk.Button(
+    rotate_flip_frame, text="Rotate", command=rotate_image, bg="white", state="disabled")
+rotate_button.pack(side="left", padx=5)
+
+# Flip Button
+flip_button = tk.Button(
+    rotate_flip_frame, text="Flip", command=flip_image, bg="white", state="disabled")
+flip_button.pack(side="left", padx=5)
+
+# Brightness Slider
+brightness_label = tk.Label(left_frame, text="Brightness", bg="white")
+brightness_label.pack()
+brightness_slider = tk.Scale(left_frame, from_=0, to=2, resolution=0.1, orient=tk.HORIZONTAL, command=change_brightness)
+brightness_slider.pack()
+brightness_slider.set(brightness_value)
+
+# Filter Combobox
+filter_label = tk.Label(left_frame, text="Select Filter", bg="white")
+filter_label.pack()
+filter_combobox = ttk.Combobox(left_frame, values=["Black and White", "Blur", "Emboss", "Sharpen", "Smooth"], state="disabled")
+filter_combobox.pack()
+
+filter_combobox.bind("<<ComboboxSelected>>",
+                     lambda event: apply_filter(filter_combobox.get()))
+
 # Color Button
 color_button = tk.Button(
     left_frame, text="Change Pen Color", command=change_color, bg="white")
@@ -244,36 +274,6 @@ pen_medium.select()
 pen_large = tk.Radiobutton(
     pen_size_frame, text="Large", value=7, command=lambda: change_size(7), bg="white")
 pen_large.pack(side="left")
-
-# Filter Combobox
-filter_label = tk.Label(left_frame, text="Select Filter", bg="white")
-filter_label.pack()
-filter_combobox = ttk.Combobox(left_frame, values=["Black and White", "Blur", "Emboss", "Sharpen", "Smooth"], state="disabled")
-filter_combobox.pack()
-
-filter_combobox.bind("<<ComboboxSelected>>",
-                     lambda event: apply_filter(filter_combobox.get()))
-
-# Brightness Slider
-brightness_label = tk.Label(left_frame, text="Brightness", bg="white")
-brightness_label.pack()
-brightness_slider = tk.Scale(left_frame, from_=0, to=2, resolution=0.1, orient=tk.HORIZONTAL, command=change_brightness)
-brightness_slider.pack()
-brightness_slider.set(brightness_value)
-
-# Rotate and Flip Buttons
-rotate_flip_frame = tk.Frame(left_frame, bg="white")
-rotate_flip_frame.pack(pady=5)
-
-# Rotate Button
-rotate_button = tk.Button(
-    rotate_flip_frame, text="Rotate", command=rotate_image, bg="white", state="disabled")
-rotate_button.pack(side="left", padx=5)
-
-# Flip Button
-flip_button = tk.Button(
-    rotate_flip_frame, text="Flip", command=flip_image, bg="white", state="disabled")
-flip_button.pack(side="left", padx=5)
 
 # Save Button
 save_button = tk.Button(left_frame, text="Save As", command=save_image, bg="white", state="disabled")
